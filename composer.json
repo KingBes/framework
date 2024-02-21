@@ -1,0 +1,23 @@
+{
+    "name": "kingbes/framework",
+    "description": "The KingBes Framework.",
+    "keywords": [
+        "framework"
+    ],
+    "license": "Apache-2.0",
+    "authors": [
+        {
+            "name": "kingbes",
+            "email": "1164601554@qq.com"
+        }
+    ],
+    "require": {
+        "php": ">=8.0.0"
+    },
+    "autoload": {
+        "files": [],
+        "psr-4": {
+            "kb\\": "src/kb/"
+        }
+    }
+}
