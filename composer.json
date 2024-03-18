@@ -15,8 +15,9 @@
         "php": ">=8.0.0"
     },
     "autoload": {
+        "files": [],
         "psr-4": {
-            "kb\\": "src/bes/"
+            "bes\\": "src/bes/"
         }
     },
     "minimum-stability": "dev",
