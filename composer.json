@@ -15,9 +15,13 @@
         "php": ">=8.0.0"
     },
     "autoload": {
-        "files": [],
         "psr-4": {
-            "kb\\": "src/kb/"
+            "kb\\": "src/bes/"
         }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "config": {
+        "sort-packages": true
     }
 }

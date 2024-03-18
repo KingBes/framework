@@ -1,9 +1,6 @@
 <?php
 
-namespace kb;
-
-use PhpWebView\WebView;
-use PhpWebView\WindowSizeHint;
+namespace bes;
 
 class App
 {
@@ -17,8 +14,8 @@ class App
     public array $windows = [];
     // 缓存方法
     private array $cache_methods = [];
-
-    public function __construct()
+    
+    /* public function __construct()
     {
         $this->windows = require_once BASE_PATH . '/config/windows.php';
         $this->app = require_once BASE_PATH . '/config/app.php';
@@ -77,5 +74,5 @@ class App
             })
             ->run()
             ->destroy();
-    }
+    } */
 }
