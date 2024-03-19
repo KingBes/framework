@@ -16,7 +16,6 @@ class WebView
      * @param string $title
      * @param int $width
      * @param int $height
-     * @param WinSizeHint $hint
      * @param string $baseDir
      * @param string|null $libraryFile
      * @param bool $debug
@@ -27,12 +26,13 @@ class WebView
         protected string         $title,
         protected int            $width,
         protected int            $height,
-        protected WinSizeHint $hint,
+        protected int            $hint,
         protected bool           $debug = false,
         protected string         $baseDir = __DIR__,
         protected ?string        $libraryFile = null,
     ) {
-        $headerContent = file_get_contents($this->baseDir . DIRECTORY_SEPARATOR . 'webview_php.h');
+        $this->hint = 0;
+        $headerContent = file_get_contents($this->baseDir . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . 'webview_php.h');
         $this->ffi = FFI::cdef($headerContent, $this->getDefaultLibraryFile());
         $this->webview = $this->ffi->webview_create((int)$this->debug, null);
     }
@@ -81,12 +81,12 @@ class WebView
         $this->height = $height;
     }
 
-    public function getHint(): WinSizeHint
+    public function getHint(): int
     {
         return $this->hint;
     }
 
-    public function setHint(WinSizeHint $hint): self
+    public function setHint(int $hint): self
     {
         $this->hint = $hint;
 
@@ -156,7 +156,7 @@ class WebView
     public function run(): self
     {
         $this->ffi->webview_set_title($this->webview, $this->title);
-        $this->ffi->webview_set_size($this->webview, $this->width, $this->height, $this->hint->value);
+        $this->ffi->webview_set_size($this->webview, $this->width, $this->height, $this->hint);
         $this->ffi->webview_run($this->webview);
 
         return $this;
@@ -186,9 +186,9 @@ class WebView
         }
 
         $this->libraryFile = match (PHP_OS_FAMILY) {
-            'Linux'   => $this->baseDir . '/build/linux/webview_php_ffi.so',
-            'Darwin'  => $this->baseDir . '/build/macos/webview_php_ffi.dylib',
-            'Windows' => $this->baseDir . '\build\windows\webview_php_ffi.dll',
+            'Linux'   => $this->baseDir . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . '/build/linux/webview_php_ffi.so',
+            'Darwin'  => $this->baseDir . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . '/build/macos/webview_php_ffi.dylib',
+            'Windows' => $this->baseDir . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . '\build\windows\webview_php_ffi.dll',
             default   => throw OsException::OsNotSupported(),
         };
 
