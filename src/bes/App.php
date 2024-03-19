@@ -69,6 +69,11 @@ class App
             0,
             $this->config->get("app.debug")
         );
+
+        // init
+        $init = new \app\init();
+        $webview->init($init->init());
+        // 绑定
         foreach ($data["methods"] as $method) {
             // 创建闭包
             $newClass = $data["class"];
@@ -199,6 +204,10 @@ class App
 
         if (is_file($appPath . 'common.php')) {
             include_once $appPath . 'common.php';
+        }
+
+        if (is_file($appPath . 'init.php')) {
+            include $appPath . 'init.php';
         }
 
         include_once $this->besPath . 'helper.php';
