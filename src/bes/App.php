@@ -56,7 +56,6 @@ class App
         $this->initialize();
 
         $data = $this->getAppData($this->app);
-        var_dump($data);
         $view = $data["className"];
         if (isset($data["class"]->view)) {
             $view = $data["class"]->view;
