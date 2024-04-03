@@ -84,7 +84,7 @@ class App
             $webview->bind($method, $closure);
         }
         // 设置HTML
-        $webview->setHTML($html);
+        $webview->navigate($html);
         $webview->bind("jump", function ($seq, $req, $context) use ($webview) {
             $this->jump($webview, $req[0]);
         });
@@ -132,9 +132,10 @@ class App
      */
     protected function getHtml(string $html): string
     {
+        // echo $this->appPath;/C:/project/php/web-view/demo/src/index.html
         $file = $this->appPath . DIRECTORY_SEPARATOR . "view" . DIRECTORY_SEPARATOR . $html . ".html";
-        $str = file_get_contents($file);
-        return $str;
+        // $str = file_get_contents($file);
+        return "file://" . $file;
     }
 
     /**
