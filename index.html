@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <button onclick="onMsg('hello php',2)">弹出</button>
+    <script>
+        function onMsg(str, num) {
+            openMsg(str, num).then(function (data, a) {
+                console.log(data)
+            })
+        }
+    </script>
+</body>
+
+</html>

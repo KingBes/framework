@@ -1,4 +1,5 @@
-typedef struct {
+typedef struct
+{
   // Major version.
   unsigned int major;
   // Minor version.
@@ -8,7 +9,8 @@ typedef struct {
 } webview_version_t;
 
 // Holds the library's version information.
-typedef struct {
+typedef struct
+{
   // The elements of the version number.
   webview_version_t version;
   // SemVer 2.0.0 version number in MAJOR.MINOR.PATCH format.
@@ -20,8 +22,8 @@ typedef struct {
   char build_metadata[48];
 } webview_version_info_t;
 
-
 typedef void *webview_t;
+typedef void *HMENU;
 
 // Creates a new webview instance. If debug is non-zero - developer tools will
 // be enabled (if the platform supports them). Window parameter can be a
@@ -31,7 +33,7 @@ typedef void *webview_t;
 // passed here. Returns null on failure. Creation can fail for various reasons
 // such as when required runtime dependencies are missing or when window creation
 // fails.
-webview_t webview_create(int debug, void *window);
+webview_t webview_create(int debug, int winWidth, int winHeight, void *window);
 
 // Destroys a webview and closes the native window.
 void webview_destroy(webview_t w);
@@ -46,8 +48,7 @@ void webview_terminate(webview_t w);
 
 // Posts a function to be executed on the main thread. You normally do not need
 // to call this function, unless you want to tweak the native window.
-void
-webview_dispatch(webview_t w, void (*fn)(webview_t w, void *arg), void *arg);
+void webview_dispatch(webview_t w, void (*fn)(webview_t w, void *arg), void *arg);
 
 // Returns a native window handle pointer. When using GTK backend the pointer
 // is GtkWindow pointer, when using Cocoa backend the pointer is NSWindow
@@ -57,10 +58,11 @@ void *webview_get_window(webview_t w);
 // Updates the title of the native window. Must be called from the UI thread.
 void webview_set_title(webview_t w, const char *title);
 
+void webview_notify_icon(webview_t w, const char *title);
 
 // Updates native window size. See WEBVIEW_HINT constants.
 void webview_set_size(webview_t w, int width, int height,
-                                  int hints);
+                      int hints);
 
 // Navigates webview to the given URL. URL may be a properly encoded data URI.
 // Examples:
@@ -89,9 +91,9 @@ void webview_eval(webview_t w, const char *js);
 // string is a JSON array of all the arguments passed to the JavaScript
 // function.
 void webview_bind(webview_t w, const char *name,
-                              void (*fn)(const char *seq, const char *req,
-                                         void *arg),
-                              void *arg);
+                  void (*fn)(const char *seq, const char *req,
+                             void *arg),
+                  void *arg);
 
 // Removes a native C callback that was previously set by webview_bind.
 void webview_unbind(webview_t w, const char *name);
@@ -101,8 +103,26 @@ void webview_unbind(webview_t w, const char *name);
 // If status is zero - result is expected to be a valid JSON result value.
 // If status is not zero - result is an error JSON object.
 void webview_return(webview_t w, const char *seq, int status,
-                                const char *result);
+                    const char *result);
 
 // Get the library's version information.
 // @since 0.10
 const webview_version_info_t *webview_version();
+
+void webview_show_win(webview_t w);
+
+void webview_destroy_win(webview_t w);
+
+// 创建图标菜单
+HMENU webview_creat_icon_menu(webview_t w);
+
+// 添加图标菜单项
+void webview_icon_menu_text(webview_t w, HMENU hp, int num, const char *title);
+
+// 弹出图标菜单
+int webview_track_icon_menu(webview_t w, HMENU hp);
+
+// 销毁图标菜单
+void webview_destory_icon_menu(webview_t w, HMENU hp);
+
+void webview_icon_menu(webview_t w, void(*fn)());

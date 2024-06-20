@@ -1,6 +1,8 @@
 <?php
 
-namespace bes;
+declare(strict_types=1);
+
+namespace KingBes\PhpWebview;
 
 use Closure;
 use FFI;
@@ -12,13 +14,15 @@ class WebView
 
     private $webview;
 
+    protected WindowSizeHint $hint = WindowSizeHint::HINT_NONE;
+
     /**
-     * @param string $title
-     * @param int $width
-     * @param int $height
-     * @param string $baseDir
-     * @param string|null $libraryFile
-     * @param bool $debug
+     * @param string $title 标题
+     * @param int $width 宽度
+     * @param int $height 高度
+     * @param bool $debug debug
+     * @param string|null $libraryFile 拓展文件路径
+     * @param WindowSizeHint $hint
      * @throws OsException
      * @throws FFI\Exception
      */
@@ -26,27 +30,39 @@ class WebView
         protected string         $title,
         protected int            $width,
         protected int            $height,
-        protected int            $hint,
         protected bool           $debug = false,
-        protected string         $baseDir = __DIR__,
         protected ?string        $libraryFile = null,
     ) {
-        $this->hint = 0;
-        $headerContent = file_get_contents($this->baseDir . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . 'webview_php.h');
+        $headerContent = file_get_contents(__DIR__ . DIRECTORY_SEPARATOR . 'webview_php.h');
         $this->ffi = FFI::cdef($headerContent, $this->getDefaultLibraryFile());
-        $this->webview = $this->ffi->webview_create((int)$this->debug, null);
+        $this->webview = $this->ffi->webview_create((int)$this->debug, $this->width, $this->height, null);
     }
 
+    /**
+     * 获取ffi function
+     *
+     * @return FFI
+     */
     public function getFFI(): FFI
     {
         return $this->ffi;
     }
 
+    /**
+     * 获取webview function
+     *
+     * @return mixed
+     */
     public function getWebview(): mixed
     {
         return $this->webview;
     }
 
+    /**
+     * 获取标题 function
+     *
+     * @return string
+     */
     public function getTitle(): string
     {
         return $this->title;
@@ -81,12 +97,12 @@ class WebView
         $this->height = $height;
     }
 
-    public function getHint(): int
+    public function getHint(): WindowSizeHint
     {
         return $this->hint;
     }
 
-    public function setHint(int $hint): self
+    public function setHint(WindowSizeHint $hint): self
     {
         $this->hint = $hint;
 
@@ -153,10 +169,23 @@ class WebView
         return $this;
     }
 
+    public function size(int $width, int $height, WindowSizeHint $hint): self
+    {
+        $this->width = $width;
+        $this->height = $height;
+        $this->hint = $hint;
+        $this->ffi->webview_set_size($this->webview, $this->width, $this->height, $this->hint->value);
+    }
+
+    public function icon_title(string $title): self
+    {
+        $this->ffi->webview_notify_icon($this->webview, $title);
+        return $this;
+    }
+
     public function run(): self
     {
         $this->ffi->webview_set_title($this->webview, $this->title);
-        $this->ffi->webview_set_size($this->webview, $this->width, $this->height, $this->hint);
         $this->ffi->webview_run($this->webview);
 
         return $this;
@@ -176,6 +205,54 @@ class WebView
         return $this;
     }
 
+    public function show_win(): self
+    {
+        $this->ffi->webview_show_win($this->webview);
+        return $this;
+    }
+
+    public function destroy_win(): self
+    {
+        $this->ffi->webview_destroy_win($this->webview);
+        return $this;
+    }
+
+    /**
+     * 任务栏图标菜单 function
+     *
+     * @param array $arr
+     * @return self
+     */
+    public function icon_menu(array $arr): self
+    {
+        if (!count($arr)) {
+            throw new \Exception("Cannot be an empty array");
+        }
+        $v = $this;
+        $this->ffi->webview_icon_menu($this->webview, function () use ($v, $arr) {
+            $hp = $v->ffi->webview_creat_icon_menu($v->webview);
+
+            foreach ($arr as $k => $val) {
+                if (isset($val["name"])) {
+                    $v->ffi->webview_icon_menu_text($v->webview, $hp, (int)$k, $val["name"]);
+                } else {
+                    throw new \Exception("There is no field name in key $k");
+                }
+            }
+
+            $num = $v->ffi->webview_track_icon_menu($v->webview, $hp);
+
+            if (isset($arr[$num]["fn"]) && is_callable($arr[$num]["fn"])) {
+                $arr[$num]["fn"]();
+            } else {
+                throw new \Exception("Field `fn` of key $num must be a function");
+            }
+            $v->ffi->webview_destory_icon_menu($v->webview, $hp);
+        });
+        return $this;
+    }
+
+
     /**
      * @throws OsException
      */
@@ -184,15 +261,11 @@ class WebView
         if ($this->libraryFile !== null) {
             return $this->libraryFile;
         }
-
-        $this->libraryFile = match (PHP_OS_FAMILY) {
-            'Linux'   => $this->baseDir . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . '/build/linux/webview_php_ffi.so',
-            'Darwin'  => $this->baseDir . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . '/build/macos/webview_php_ffi.dylib',
-            'Windows' => $this->baseDir . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . '\build\windows\webview_php_ffi.dll',
-            default   => throw OsException::OsNotSupported(),
-        };
-
-
+        $this->libraryFile = dirname(__DIR__)
+            . DIRECTORY_SEPARATOR
+            . "dll"
+            . DIRECTORY_SEPARATOR
+            . 'webview_php_ffi.dll';
         return $this->libraryFile;
     }
 }
