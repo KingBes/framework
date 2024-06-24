@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace KingBes\PhpWebview;
+namespace App\PhpWebview;
 
 use Closure;
 use FFI;

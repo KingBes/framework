@@ -20,7 +20,8 @@
     },
     "autoload": {
         "psr-4": {
-            "KingBes\\PhpWebview\\": "src/PhpWebview/"
+            "app\\": "KingBes/",
+            "app\\Controller": "controller/"
         }
     },
     "minimum-stability": "dev",

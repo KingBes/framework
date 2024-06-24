@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace KingBes\PhpWebview;
+namespace App\PhpWebview;
 
 /**
  * HINT_NONE 自由缩放
