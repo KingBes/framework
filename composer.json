@@ -20,9 +20,13 @@
     },
     "autoload": {
         "psr-4": {
-            "app\\": "KingBes/",
-            "app\\Controller": "controller/"
-        }
+            "app\\": "KingBes",
+            "app\\controller\\": "controller"
+        },
+        "files": [
+            "kingbes/Help.php",
+            "function.php"
+        ]
     },
     "minimum-stability": "dev",
     "prefer-stable": true,

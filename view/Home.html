@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <center>Hello World</center>
+    <button onclick="onGet()">get</button>
+    <button onclick="app_jump('About')">跳转about</button>
+    <script>
+        function onGet() {
+            get('nihao').then(function (res) {
+                console.log(res)
+            })
+        }
+    </script>
+</body>
+
+</html>

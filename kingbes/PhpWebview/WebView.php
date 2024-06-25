@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\PhpWebview;
+namespace app\PhpWebview;
 
 use Closure;
 use FFI;
