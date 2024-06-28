@@ -7,6 +7,7 @@ namespace app\kingbes;
 use app\kingbes\PhpWebview\WebView;
 use Exception;
 use app\kingbes\PhpWebview\Dialog;
+use think\facade\Db;
 
 class KingBes
 {
@@ -52,6 +53,8 @@ class KingBes
             self::$config->get("app.windows.height", 480),
             self::$config->get("app.windows.debug", true),
         );
+        // 启动数据库
+        Db::setConfig(self::$config->get("middleware"));
     }
 
     /**
