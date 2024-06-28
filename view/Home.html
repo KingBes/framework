@@ -5,18 +5,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <!-- 加载资源文件 -->
+    <link rel="stylesheet" href="./public/css/app.css">
 </head>
 
 <body>
     <center>Hello World</center>
+    <center>PHP Windows GUI</center>
+    <p>link</p>
+    <a target="_blank" href="C:/project/php/framework/public/css/app.css">link</a>
     <button onclick="onGet()">get</button>
     <button onclick="app_jump('About')">跳转about</button>
+    <button onclick="app_jump('SizeWin')">跳转SizeWin</button>
     <script>
         function onGet() {
             get('nihao').then(function (res) {
                 console.log(res)
             })
         }
+        document.body.addEventListener('contextmenu', function (e) {
+            alert("body")
+        }); 
     </script>
 </body>
 

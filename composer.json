@@ -16,16 +16,16 @@
     ],
     "require": {
         "php": ">=8.1.0",
-        "ffi/work-directory": "^1.0.0"
+        "ext-ffi": "*",
+        "topthink/think-orm": "*"
     },
     "autoload": {
         "psr-4": {
-            "app\\": "KingBes",
-            "app\\controller\\": "controller"
+            "app\\": "app"
         },
         "files": [
-            "kingbes/Help.php",
-            "function.php"
+            "app/kingbes/Help.php",
+            "app/public.php"
         ]
     },
     "minimum-stability": "dev",

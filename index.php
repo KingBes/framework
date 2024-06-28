@@ -1,7 +1,7 @@
 <?php
 
 // [ 应用入口文件 ]
-namespace app;
+namespace app\kingbes;
 
 require 'vendor/autoload.php';
 
