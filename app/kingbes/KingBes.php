@@ -54,7 +54,7 @@ class KingBes
             self::$config->get("app.windows.debug", true),
         );
         // 启动数据库
-        Db::setConfig(self::$config->get("middleware"));
+        Db::setConfig(self::$config->get("database"));
     }
 
     /**
