@@ -8,6 +8,13 @@ use think\Facade\Db;
 
 class Home
 {
+    /**
+     * get function
+     *
+     * @param integer $seq 触发次数
+     * @param array $req js传来的参数
+     * @return array
+     */
     public function get(int $seq, array $req): array
     {
         $DB = Db::name("text")->select();
