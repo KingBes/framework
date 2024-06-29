@@ -46,7 +46,10 @@ class KingBes
         self::$dialog = new Dialog();
         $this->set_mode_id();
         $this->load_config();
-        date_default_timezone_set(self::$config->get("app.default_timezone", "Asia/Shanghai"));
+        date_default_timezone_set(self::$config->get(
+            "app.default_timezone",
+            "Asia/Shanghai"
+        ));
         self::$wv = new WebView(
             self::$config->get("app.windows.title", "PHP GUI"),
             self::$config->get("app.windows.width", 640),
@@ -77,8 +80,7 @@ class KingBes
                 self::app_jump($page);
             }
         );
-        $this->controller();
-        $this->view();
+        self::app_jump("");
         self::$wv->run();
         self::$wv->destroy();
         exit; //结束
@@ -112,12 +114,8 @@ EOF;
      * @param string $name
      * @return void
      */
-    protected static function controller(string $name = ""): void
+    protected static function controller(string $name): void
     {
-        // 默认Home控制器
-        if ($name == "") {
-            $name = self::$config->get("app.default_controller", "Home");
-        }
         // 卸载旧的绑定
         foreach (self::$binds as $b) {
             self::$wv->unbind($b);
@@ -168,11 +166,8 @@ EOF;
      * @param string $name
      * @return void
      */
-    protected static function view(string $name = ""): void
+    protected static function view(string $name): void
     {
-        if ($name == "") {
-            $name = self::$config->get("app.default_controller", "Home");
-        }
         $suffix = self::$config->get("app.default_view.suffix");
         $path = base_path(
             self::$config->get("app.default_view.dirname"),
@@ -222,6 +217,9 @@ EOF;
      */
     public static function app_jump(string $page = ""): void
     {
+        if (trim($page)  == "") {
+            $page = self::$config->get("app.default_controller", "Home");
+        }
         $res = true;
         $middlewares = self::$config->get("middleware", []);
         foreach ($middlewares as $middleware) {

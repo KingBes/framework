@@ -6,16 +6,16 @@ namespace app\controller;
 
 class About
 {
-    public function set(int $seq, array $req): mixed
+    public function set(int $seq, array $req): array
     {
         var_dump($seq);
         var_dump($req);
-        return "ASd123";
+        return ["你好"];
     }
 
-    public function onExit(int $seq, array $req): mixed
+    public function onExit(int $seq, array $req): array
     {
         app()->destroy_win();
-        return true;
+        return [1];
     }
 }
