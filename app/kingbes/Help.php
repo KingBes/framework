@@ -126,7 +126,7 @@ if (!function_exists("dialog_dir")) {
     }
 }
 
-if (!function_exists("dialog_file")) {
+if (!function_exists("dialog_save")) {
     /**
      * 保存文件对话框 function
      *
@@ -135,7 +135,7 @@ if (!function_exists("dialog_file")) {
      * @param string $path 保存路径 如：D:/dir
      * @return boolean
      */
-    function dialog_file(
+    function dialog_save(
         string $content,
         string $filename,
         string $path = ""

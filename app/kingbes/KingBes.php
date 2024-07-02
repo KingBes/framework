@@ -46,7 +46,10 @@ class KingBes
         self::$dialog = new Dialog();
         $this->set_mode_id();
         $this->load_config();
-        date_default_timezone_set(self::$config->get("app.default_timezone", "Asia/Shanghai"));
+        date_default_timezone_set(self::$config->get(
+            "app.default_timezone",
+            "Asia/Shanghai"
+        ));
         self::$wv = new WebView(
             self::$config->get("app.windows.title", "PHP GUI"),
             self::$config->get("app.windows.width", 640),
@@ -77,8 +80,7 @@ class KingBes
                 self::app_jump($page);
             }
         );
-        $this->controller();
-        $this->view();
+        self::app_jump("");
         self::$wv->run();
         self::$wv->destroy();
         exit; //结束
@@ -98,7 +100,9 @@ document.addEventListener('DOMContentLoaded', function() {
     document.addEventListener('contextmenu', function(e) {  
         console.log("非开发者模式不得右键~")
         console.log("Non-developer mode cannot right-click~")
-        e.preventDefault();  
+        if (!e.target.matches('img')) {  
+            e.preventDefault(); // 如果不是 <img>，则阻止默认右键菜单  
+        }  
     }); 
 });  
 EOF;
@@ -112,16 +116,8 @@ EOF;
      * @param string $name
      * @return void
      */
-    protected static function controller(string $name = ""): void
+    protected static function controller(string $name): void
     {
-        // 默认Home控制器
-        if ($name == "") {
-            $name = self::$config->get("app.default_controller", "Home");
-        }
-        // 卸载旧的绑定
-        foreach (self::$binds as $b) {
-            self::$wv->unbind($b);
-        }
         // 重新配置控制器内容
         $class = "app\\controller\\{$name}";
         if (class_exists($class)) {
@@ -144,10 +140,9 @@ EOF;
                 self::$wv->setTitle($instantiated_class->title);
             }
 
-            $methods = [];
             foreach ($Ref->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
                 if ($method->name !== "app_jump") {
-                    $methods[] = $method->name;
+                    self::$binds[] = $method->name;
                     $Closure = function ($seq, $req, $context)
                     use ($instantiated_class, $method) {
                         return $instantiated_class->{$method->name}((int)$seq, $req);
@@ -155,8 +150,6 @@ EOF;
                     self::$wv->bind($method->name, $Closure);
                 }
             }
-            // 重新赋值绑定信息
-            self::$binds = $methods;
         } else {
             throw new Exception("No {$class} class found");
         }
@@ -168,11 +161,8 @@ EOF;
      * @param string $name
      * @return void
      */
-    protected static function view(string $name = ""): void
+    protected static function view(string $name): void
     {
-        if ($name == "") {
-            $name = self::$config->get("app.default_controller", "Home");
-        }
         $suffix = self::$config->get("app.default_view.suffix");
         $path = base_path(
             self::$config->get("app.default_view.dirname"),
@@ -193,6 +183,31 @@ EOF;
     public static function get_app(): WebView
     {
         return self::$wv;
+    }
+
+    /**
+     * 添加和js交互函数绑定 function
+     *
+     * @param string $name 绑定函数名
+     * @param \Closure $function $seq, $req 函数
+     * @return void
+     */
+    public static function bind_method(string $name, \Closure $function): void
+    {
+        foreach (self::$binds as $k => $v) {
+            if ($v === $name) {
+                throw new Exception("Double-bound to the existing controller");
+                break;
+            } else {
+                continue;
+            }
+        }
+        self::$binds[] = $name;
+        $Closure = function ($seq, $req, $context)
+        use ($function) {
+            return $function($seq, $req);
+        };
+        self::$wv->bind($name, $Closure);
     }
 
     /**
@@ -222,6 +237,15 @@ EOF;
      */
     public static function app_jump(string $page = ""): void
     {
+        // 卸载旧的绑定
+        foreach (self::$binds as $b) {
+            self::$wv->unbind($b);
+        }
+        self::$binds = [];
+        
+        if (trim($page)  == "") {
+            $page = self::$config->get("app.default_controller", "Home");
+        }
         $res = true;
         $middlewares = self::$config->get("middleware", []);
         foreach ($middlewares as $middleware) {
