@@ -100,9 +100,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.addEventListener('contextmenu', function(e) {  
         console.log("非开发者模式不得右键~")
         console.log("Non-developer mode cannot right-click~")
-        if (!e.target.matches('img')) {  
-            e.preventDefault(); // 如果不是 <img>，则阻止默认右键菜单  
-        }  
+        e.preventDefault();  
     }); 
 });  
 EOF;
@@ -186,31 +184,6 @@ EOF;
     }
 
     /**
-     * 添加和js交互函数绑定 function
-     *
-     * @param string $name 绑定函数名
-     * @param \Closure $function $seq, $req 函数
-     * @return void
-     */
-    public static function bind_method(string $name, \Closure $function): void
-    {
-        foreach (self::$binds as $k => $v) {
-            if ($v === $name) {
-                throw new Exception("Double-bound to the existing controller");
-                break;
-            } else {
-                continue;
-            }
-        }
-        self::$binds[] = $name;
-        $Closure = function ($seq, $req, $context)
-        use ($function) {
-            return $function($seq, $req);
-        };
-        self::$wv->bind($name, $Closure);
-    }
-
-    /**
      * 对话框 function
      *
      * @return object
@@ -242,7 +215,6 @@ EOF;
             self::$wv->unbind($b);
         }
         self::$binds = [];
-        
         if (trim($page)  == "") {
             $page = self::$config->get("app.default_controller", "Home");
         }
@@ -265,6 +237,31 @@ EOF;
             self::controller($page);
             self::view($page);
         }
+    }
+
+    /**
+     * 追加加和js交互函数绑定 function
+     *
+     * @param string $name 绑定函数名
+     * @param \Closure $function $seq, $req 函数
+     * @return void
+     */
+    public static function bind_method(string $name, \Closure $function): void
+    {
+        foreach (self::$binds as $k => $v) {
+            if ($v === $name) {
+                throw new Exception("Double-bound to the existing controller");
+                break;
+            } else {
+                continue;
+            }
+        }
+        self::$binds[] = $name;
+        $Closure = function ($seq, $req, $context)
+        use ($function) {
+            return $function($seq, $req);
+        };
+        self::$wv->bind($name, $Closure);
     }
 
     /**

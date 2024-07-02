@@ -8,11 +8,19 @@ use think\Facade\Db;
 
 class Home
 {
-    public function get(int $seq, array $req): mixed
+    /**
+     * get function
+     *
+     * @param integer $seq 触发次数
+     * @param array $req js传来的参数
+     * @return array
+     */
+    public function get(int $seq, array $req): array
     {
-        // $DB = Db::name("asd")->select();
+        $DB = Db::name("text")->select();
+        var_dump($DB->toArray());
         var_dump($seq);
         var_dump($req);
-        return "ASd123";
+        return ["PHP WINDOWS GUI"];
     }
 }
